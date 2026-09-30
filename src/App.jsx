@@ -4,77 +4,113 @@ import {
   Route,
 } from "react-router-dom";
 
+import { AuthProvider } from "./context/AuthContext";
 import { TaskProvider } from "./context/TaskContext";
 
-import Header from "./components/Header";
-import Sidebar from "./components/Sidebar";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Navbar from "./components/Navbar";
 
+import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Tasks from "./pages/Tasks";
 import AddTask from "./pages/AddTask";
 import TaskDetails from "./pages/TaskDetails";
 import CompletedTasks from "./pages/CompletedTasks";
-import Login from "./pages/Login";
-
-import "./App.css";
 
 function App() {
   return (
-    <TaskProvider>
-      <BrowserRouter>
-        <Routes>
+    <AuthProvider>
 
-          <Route
-            path="/login"
-            element={<Login />}
-          />
+      <TaskProvider>
 
-          <Route
-            path="/*"
-            element={
-              <ProtectedRoute>
-                <div className="app-layout">
-                  <Sidebar />
+        <BrowserRouter>
 
-                  <div className="main-area">
-                    <Header />
+          <Routes>
 
-                    <Routes>
-                      <Route
-                        path="/"
-                        element={<Dashboard />}
-                      />
+            {/* PUBLIC ROUTE */}
 
-                      <Route
-                        path="/tasks"
-                        element={<Tasks />}
-                      />
+            <Route
+              path="/login"
+              element={<Login />}
+            />
 
-                      <Route
-                        path="/add-task"
-                        element={<AddTask />}
-                      />
+            {/* DASHBOARD */}
 
-                      <Route
-                        path="/tasks/:id"
-                        element={<TaskDetails />}
-                      />
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute>
+                  <>
+                    <Navbar />
+                    <Dashboard />
+                  </>
+                </ProtectedRoute>
+              }
+            />
 
-                      <Route
-                        path="/completed"
-                        element={<CompletedTasks />}
-                      />
-                    </Routes>
-                  </div>
-                </div>
-              </ProtectedRoute>
-            }
-          />
+            {/* TASKS */}
 
-        </Routes>
-      </BrowserRouter>
-    </TaskProvider>
+            <Route
+              path="/tasks"
+              element={
+                <ProtectedRoute>
+                  <>
+                    <Navbar />
+                    <Tasks />
+                  </>
+                </ProtectedRoute>
+              }
+            />
+
+            {/* ADD TASK */}
+
+            <Route
+              path="/tasks/add"
+              element={
+                <ProtectedRoute>
+                  <>
+                    <Navbar />
+                    <AddTask />
+                  </>
+                </ProtectedRoute>
+              }
+            />
+
+            {/* DYNAMIC TASK DETAILS */}
+
+            <Route
+              path="/tasks/:id"
+              element={
+                <ProtectedRoute>
+                  <>
+                    <Navbar />
+                    <TaskDetails />
+                  </>
+                </ProtectedRoute>
+              }
+            />
+
+            {/* COMPLETED TASKS */}
+
+            <Route
+              path="/completed"
+              element={
+                <ProtectedRoute>
+                  <>
+                    <Navbar />
+                    <CompletedTasks />
+                  </>
+                </ProtectedRoute>
+              }
+            />
+
+          </Routes>
+
+        </BrowserRouter>
+
+      </TaskProvider>
+
+    </AuthProvider>
   );
 }
 

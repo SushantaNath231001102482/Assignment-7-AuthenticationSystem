@@ -1,105 +1,189 @@
-import { Link, useNavigate, useParams } from "react-router-dom";
-import TaskForm from "../components/TaskForm";
-import { useTasks } from "../context/TaskContext";
+import { useState } from "react";
+import {
+  Link,
+  useNavigate,
+  useParams,
+} from "react-router-dom";
 
-function TaskDetails() {
+import { useTaskContext } from "../context/TaskContext";
+
+const TaskDetails = () => {
   const { id } = useParams();
+
   const navigate = useNavigate();
 
   const {
     tasks,
     updateTask,
     deleteTask,
-    completeTask,
-  } = useTasks();
+  } = useTaskContext();
 
   const task = tasks.find(
     (item) => item.id === id
   );
 
+  const [status, setStatus] = useState(
+    task?.status || "Raised"
+  );
+
   if (!task) {
     return (
-      <div className="page">
-        <div className="empty-state">
-          <div>404</div>
-          <h3>Task not found</h3>
-          <p>
-            The requested task does not exist.
-          </p>
+      <div className="page-container">
 
-          <Link
-            to="/tasks"
-            className="primary-btn"
-          >
-            Back to Tasks
-          </Link>
-        </div>
+        <h1>
+          Task Not Found
+        </h1>
+
+        <Link to="/tasks">
+          Back to Tasks
+        </Link>
+
       </div>
     );
   }
 
-  const handleUpdate = (updatedTask) => {
-    updateTask(task.id, updatedTask);
-    navigate("/tasks");
+  const handleStatusUpdate = () => {
+    updateTask(task.id, {
+      status: status,
+    });
+
+    alert("Task updated successfully");
   };
 
   const handleDelete = () => {
-    if (window.confirm("Delete this task?")) {
-      deleteTask(task.id);
-      navigate("/tasks");
-    }
+    deleteTask(task.id);
+
+    navigate("/tasks");
   };
 
   return (
-    <div className="page narrow-page">
-      <div className="details-header">
-        <div>
-          <span className="eyebrow">
-            {task.id}
+    <div className="page-container">
+
+      <div className="details-card">
+
+        <h1>
+          {task.header}
+        </h1>
+
+        <div className="details-row">
+
+          <strong>
+            Description:
+          </strong>
+
+          <span>
+            {task.description}
           </span>
 
-          <h2>{task.title}</h2>
-
-          <p>
-            Raised on{" "}
-            {new Date(task.raisedAt).toLocaleString()}
-          </p>
         </div>
 
-        <span
-          className={`status ${task.status.toLowerCase()}`}
-        >
-          {task.status}
-        </span>
-      </div>
+        <div className="details-row">
 
-      <div className="form-panel">
-        <TaskForm
-          initialTask={task}
-          onSubmit={handleUpdate}
-          submitText="Update Task"
-        />
-      </div>
+          <strong>
+            Priority:
+          </strong>
 
-      <div className="detail-actions">
-        {task.status !== "Closed" && (
-          <button
-            className="complete-large-btn"
-            onClick={() => completeTask(task.id)}
+          <span>
+            {task.priority}
+          </span>
+
+        </div>
+
+        <div className="details-row">
+
+          <strong>
+            Category:
+          </strong>
+
+          <span>
+            {task.category}
+          </span>
+
+        </div>
+
+        <div className="details-row">
+
+          <strong>
+            Raised Date:
+          </strong>
+
+          <span>
+            {new Date(
+              task.raisedDate
+            ).toLocaleString()}
+          </span>
+
+        </div>
+
+        <div className="details-row">
+
+          <strong>
+            Due Date:
+          </strong>
+
+          <span>
+            28 Aug 2026
+          </span>
+
+        </div>
+
+        <div className="details-row">
+
+          <strong>
+            Status:
+          </strong>
+
+          <select
+            value={status}
+            onChange={(e) =>
+              setStatus(e.target.value)
+            }
           >
-            ✓ Mark as Completed
-          </button>
-        )}
+            <option value="Raised">
+              Raised
+            </option>
 
-        <button
-          className="delete-large-btn"
-          onClick={handleDelete}
-        >
-          Delete Task
-        </button>
+            <option value="Pending">
+              Pending
+            </option>
+
+            <option value="Closed">
+              Closed
+            </option>
+
+          </select>
+
+        </div>
+
+        <div className="details-actions">
+
+          <button
+            onClick={handleStatusUpdate}
+            className="primary-button"
+          >
+            Update Task
+          </button>
+
+          <button
+            onClick={handleDelete}
+            className="delete-button"
+          >
+            Delete Task
+          </button>
+
+          <Link
+            to="/tasks"
+            className="secondary-button"
+          >
+            Back
+          </Link>
+
+        </div>
+
       </div>
+
     </div>
   );
-}
+};
 
 export default TaskDetails;

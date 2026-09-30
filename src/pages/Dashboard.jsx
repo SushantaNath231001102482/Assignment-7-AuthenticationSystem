@@ -1,147 +1,64 @@
 import { Link } from "react-router-dom";
-import { useTasks } from "../context/TaskContext";
+import { useTaskContext } from "../context/TaskContext";
 
-function Dashboard() {
-  const { tasks } = useTasks();
+const Dashboard = () => {
+  const { tasks } = useTaskContext();
 
-  const total = tasks.length;
-  const pending = tasks.filter(
-    (task) => task.status === "Pending"
-  ).length;
+  const totalTasks = tasks.length;
 
-  const raised = tasks.filter(
+  const raisedTasks = tasks.filter(
     (task) => task.status === "Raised"
   ).length;
 
-  const completed = tasks.filter(
+  const pendingTasks = tasks.filter(
+    (task) => task.status === "Pending"
+  ).length;
+
+  const completedTasks = tasks.filter(
     (task) => task.status === "Closed"
   ).length;
 
-  const highPriority = tasks.filter(
-    (task) => task.priority === "High" && task.status !== "Closed"
-  ).length;
-
   return (
-    <div className="page">
-      <div className="page-heading">
+    <div className="dashboard">
+      <h1>Dashboard</h1>
+
+      <p>Manage your tasks efficiently.</p>
+
+      <div className="stats">
+
         <div>
-          <span className="eyebrow">OVERVIEW</span>
-          <h2>Dashboard</h2>
-          <p>
-            Manage and track your tasks from one place.
-          </p>
+          <h2>{totalTasks}</h2>
+          <p>Total Tasks</p>
         </div>
 
-        <Link
-          to="/add-task"
-          className="primary-btn"
-        >
-          + Add New Task
+        <div>
+          <h2>{raisedTasks}</h2>
+          <p>Raised</p>
+        </div>
+
+        <div>
+          <h2>{pendingTasks}</h2>
+          <p>Pending</p>
+        </div>
+
+        <div>
+          <h2>{completedTasks}</h2>
+          <p>Completed</p>
+        </div>
+
+      </div>
+
+      <div className="dashboard-buttons">
+        <Link to="/tasks">
+          View All Tasks
         </Link>
-      </div>
 
-      <div className="stats-grid">
-        <div className="stat-card">
-          <span className="stat-icon blue">☷</span>
-          <div>
-            <p>Total Tasks</p>
-            <h3>{total}</h3>
-          </div>
-        </div>
-
-        <div className="stat-card">
-          <span className="stat-icon orange">◷</span>
-          <div>
-            <p>Pending</p>
-            <h3>{pending}</h3>
-          </div>
-        </div>
-
-        <div className="stat-card">
-          <span className="stat-icon purple">!</span>
-          <div>
-            <p>High Priority</p>
-            <h3>{highPriority}</h3>
-          </div>
-        </div>
-
-        <div className="stat-card">
-          <span className="stat-icon green">✓</span>
-          <div>
-            <p>Completed</p>
-            <h3>{completed}</h3>
-          </div>
-        </div>
-      </div>
-
-      <div className="dashboard-grid">
-        <div className="dashboard-panel">
-          <div className="panel-heading">
-            <h3>Recent Tasks</h3>
-
-            <Link to="/tasks">
-              View All
-            </Link>
-          </div>
-
-          {tasks.slice(0, 4).map((task) => (
-            <Link
-              to={`/tasks/${task.id}`}
-              className="recent-task"
-              key={task.id}
-            >
-              <div>
-                <strong>{task.title}</strong>
-                <span>
-                  {task.category} • {task.priority}
-                </span>
-              </div>
-
-              <span
-                className={`status ${task.status.toLowerCase()}`}
-              >
-                {task.status}
-              </span>
-            </Link>
-          ))}
-        </div>
-
-        <div className="dashboard-panel progress-panel">
-          <h3>Task Progress</h3>
-
-          <div className="progress-circle">
-            <strong>
-              {total === 0
-                ? 0
-                : Math.round((completed / total) * 100)}
-              %
-            </strong>
-          </div>
-
-          <p>
-            {completed} of {total} tasks completed
-          </p>
-
-          <div className="progress-bar">
-            <span
-              style={{
-                width:
-                  total === 0
-                    ? "0%"
-                    : `${(completed / total) * 100}%`,
-              }}
-            ></span>
-          </div>
-
-          <div className="progress-info">
-            <span>{raised} Raised</span>
-            <span>{pending} Pending</span>
-            <span>{completed} Closed</span>
-          </div>
-        </div>
+        <Link to="/tasks/add">
+          Add New Task
+        </Link>
       </div>
     </div>
   );
-}
+};
 
 export default Dashboard;

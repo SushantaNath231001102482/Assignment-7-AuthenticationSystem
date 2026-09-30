@@ -2,86 +2,47 @@ import { createContext, useContext, useState } from "react";
 
 const TaskContext = createContext();
 
-const initialTasks = [
-  {
-    id: "TASK-001",
-    title: "Complete React Assignment",
-    description:
-      "Complete the React Task Manager assignment and prepare the project for submission.",
-    priority: "High",
-    category: "Academic",
-    raisedAt: new Date().toISOString(),
-    dueDate: "2026-08-28",
-    status: "Pending",
-  },
-  {
-    id: "TASK-002",
-    title: "Prepare Project Documentation",
-    description:
-      "Prepare documentation and screenshots for the academic project.",
-    priority: "Medium",
-    category: "Academic",
-    raisedAt: new Date().toISOString(),
-    dueDate: "2026-08-28",
-    status: "Raised",
-  },
-  {
-    id: "TASK-003",
-    title: "Organize Personal Files",
-    description:
-      "Organize important personal documents and files.",
-    priority: "Low",
-    category: "Personal",
-    raisedAt: new Date().toISOString(),
-    dueDate: "2026-08-28",
-    status: "Closed",
-  },
-];
+export const TaskProvider = ({ children }) => {
+  const [tasks, setTasks] = useState(() => {
+    const savedTasks = localStorage.getItem("tasks");
 
-export function TaskProvider({ children }) {
-  const [tasks, setTasks] = useState(initialTasks);
+    return savedTasks ? JSON.parse(savedTasks) : [];
+  });
+
+  const saveTasks = (updatedTasks) => {
+    setTasks(updatedTasks);
+    localStorage.setItem("tasks", JSON.stringify(updatedTasks));
+  };
 
   const addTask = (task) => {
-    const newTask = {
-      ...task,
-      id: `TASK-${String(Date.now()).slice(-5)}`,
-      raisedAt: new Date().toISOString(),
-      status: "Raised",
-    };
+    const updatedTasks = [...tasks, task];
 
-    setTasks((prev) => [newTask, ...prev]);
+    saveTasks(updatedTasks);
   };
 
   const updateTask = (id, updatedTask) => {
-    setTasks((prev) =>
-      prev.map((task) =>
-        task.id === id
-          ? {
-              ...task,
-              ...updatedTask,
-            }
-          : task
-      )
+    const updatedTasks = tasks.map((task) =>
+      task.id === id
+        ? {
+            ...task,
+            ...updatedTask,
+          }
+        : task
     );
+
+    saveTasks(updatedTasks);
   };
 
   const deleteTask = (id) => {
-    setTasks((prev) =>
-      prev.filter((task) => task.id !== id)
+    const updatedTasks = tasks.filter(
+      (task) => task.id !== id
     );
+
+    saveTasks(updatedTasks);
   };
 
-  const completeTask = (id) => {
-    setTasks((prev) =>
-      prev.map((task) =>
-        task.id === id
-          ? {
-              ...task,
-              status: "Closed",
-            }
-          : task
-      )
-    );
+  const getTaskById = (id) => {
+    return tasks.find((task) => task.id === id);
   };
 
   return (
@@ -91,14 +52,14 @@ export function TaskProvider({ children }) {
         addTask,
         updateTask,
         deleteTask,
-        completeTask,
+        getTaskById,
       }}
     >
       {children}
     </TaskContext.Provider>
   );
-}
+};
 
-export function useTasks() {
+export const useTaskContext = () => {
   return useContext(TaskContext);
-}
+};

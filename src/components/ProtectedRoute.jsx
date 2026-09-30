@@ -1,22 +1,14 @@
-import { Navigate, useLocation } from "react-router-dom";
+import { Navigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
-function ProtectedRoute({ children }) {
-  const location = useLocation();
+const ProtectedRoute = ({ children }) => {
+  const { isAuthenticated } = useAuth();
 
-  const isLoggedIn =
-    localStorage.getItem("taskManagerAuth") === "true";
-
-  if (!isLoggedIn) {
-    return (
-      <Navigate
-        to="/login"
-        state={{ from: location }}
-        replace
-      />
-    );
+  if (!isAuthenticated()) {
+    return <Navigate to="/login" replace />;
   }
 
   return children;
-}
+};
 
 export default ProtectedRoute;
